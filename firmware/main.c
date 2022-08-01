@@ -5,10 +5,11 @@
 #include <avr/interrupt.h>	// for sei(), cli() and ISR()
 #include <util/delay.h> // for waiting
 
-// Command pulses output: PB2
-// Command pulses progress: PB3
-// Tag pulses input: PA4
-// Tag detected indicator output: PA7
+// Command pulses progress: PA4
+// Command pulses output: PA7
+// Tag pulses input: PA6
+// Tag preamble detected indicator output: PB2
+// Tag EPC detected indicator output: PB3
 // USART (alternative pin) RX: PA2
 // USART (alternative pin) TX: PA1
 
@@ -141,15 +142,10 @@ int main() {
 					iPreamblePulse++; // point to next element
 					if (iPreamblePulse >= NUM_PREAMBLE) {
 						// preamble finished
-						PORTA.OUTSET = PIN7_bm; // tag detected indicator
+						PORTB.OUTSET = PIN2_bm; // tag preamble detected indicator
 						if (tagResponse == RN16) {
 							iACKPulse = NUM_ACK_PREFIX;
 						} else if (tagResponse == EPC) {
-							/*
-							_delay_ms(100); // for perceptual brighter indicator
-							resetParsing();
-							tagResponse = RN16;
-							*/
 							iEPCBit = 7;
 							iEPCByte = 0;
 							memset(epc, 0, NUM_EPC_PREFIX+NUM_EPC_BYTES);
@@ -197,7 +193,7 @@ int main() {
 void resetParsing() {
 	iPreamblePulse = 0;
 	halfTagData0 = FALSE;
-	PORTA.OUTCLR = PIN7_bm; // clear tag detected indicator
+	PORTB.OUTCLR = PIN2_bm | PIN3_bm; // clear tag detected indicator
 }
 
 void modifyACK(uint8_t pulseWidth) {
@@ -219,6 +215,10 @@ void modifyEPC(uint8_t bitVal) {
 		iEPCByte++;
 		if (iEPCByte >= NUM_EPC_PREFIX+NUM_EPC_BYTES) {
 			// reached end
+			PORTB.OUTCLR = PIN2_bm; // clear tag preamble detected indicator to better point out EPC indicator
+			PORTB.OUTSET = PIN3_bm; // tag EPC detected indicator
+
+			// format and send EPC via UART
 			static char hexStr[3];
 			for (iEPCByte = NUM_EPC_PREFIX; iEPCByte < NUM_EPC_PREFIX+NUM_EPC_BYTES; iEPCByte++) {
 				// format EPC bytes as hex ascii strings
@@ -226,7 +226,8 @@ void modifyEPC(uint8_t bitVal) {
 				sendStringRaw(hexStr);
 			}
 			sendChar(STR_TERM);
-			//_delay_ms(100); // for perceptual brighter indicator
+
+			// reset
 			resetParsing();
 			tagResponse = RN16;
 		}
@@ -258,28 +259,28 @@ inline void parseCommand(const char* pStr) {
 void enablePower(uint8_t enable) {
 	// enables or disables power
 	if (enable) {
-		PORTB.OUTSET = PIN2_bm; // enable
+		PORTA.OUTSET = PIN7_bm; // enable
 		powerEnable = TRUE;
 	} else {
-		PORTB.OUTCLR = PIN2_bm; // disable
+		PORTA.OUTCLR = PIN7_bm; // disable
 		powerEnable = FALSE;
 	}
 }
 
 void runSequence(const uint8_t* pPulses) {
 	// indication
-	PORTB.OUTSET = PIN3_bm;
+	PORTA.OUTSET = PIN4_bm;
 
 	// starts the sequence
 	TCA0.SINGLE.CNT = 0; // reset count
 	uint8_t pulse = *pPulses++; // read first pulse length
 	TCA0.SINGLE.PER = pulse*10; // set TOP
 	TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm; // enable timer
-	PORTB.OUTCLR = PIN2_bm; // first pulse is low level
+	PORTA.OUTCLR = PIN7_bm; // first pulse is low level
 	while (TRUE) {
 		if (TCA0.SINGLE.INTFLAGS & TCA_SINGLE_OVF_bm) {
 			TCA0.SINGLE.INTFLAGS |= TCA_SINGLE_OVF_bm; // clear flag
-			PORTB.OUTTGL = PIN2_bm; // toggle output
+			PORTA.OUTTGL = PIN7_bm; // toggle output
 			uint8_t pulse = *pPulses++; // read next pulse length
 			if (pulse) {
 				TCA0.SINGLE.PER = pulse*10; // set next TOP
@@ -289,11 +290,11 @@ void runSequence(const uint8_t* pPulses) {
 		}
 	}
 	// finish process
-	if (powerEnable) PORTB.OUTSET = PIN2_bm; // enforce high level
+	if (powerEnable) PORTA.OUTSET = PIN7_bm; // enforce high level
 	TCA0.SINGLE.CTRLA &= ~TCA_SINGLE_ENABLE_bm; // disable timer
 
 	// indication
-	PORTB.OUTCLR = PIN3_bm;
+	PORTA.OUTCLR = PIN4_bm;
 }
 
 uint8_t pulseMatch(uint16_t pulseLen1, uint16_t pulseLen2) {
@@ -302,11 +303,10 @@ uint8_t pulseMatch(uint16_t pulseLen1, uint16_t pulseLen2) {
 }
 
 void configGPIO() {
+	PORTA.DIRSET = PIN4_bm | PIN7_bm; // PA4 and PA7 as output
+	PORTA.DIRCLR = PIN6_bm; // PA6 as input
+	PORTA.PIN4CTRL |= PORT_INVEN_bm; // invert cmd progress output to simplify circuit
 	PORTB.DIRSET = PIN3_bm | PIN2_bm; // PB2 and PB3 as output
-	PORTA.DIRCLR = PIN4_bm; // PA4 as input
-	PORTA.PIN4CTRL = PORT_PULLUPEN_bm; // enable pullup resistor for PA4
-	PORTA.DIRSET = PIN7_bm; // PA7 as output
-	PORTB.PIN3CTRL |= PORT_INVEN_bm; // invert cmd progress output to simplify circuit
 }
 
 void configClock() {
@@ -358,7 +358,7 @@ void configTCA() {
 void configTCB() {
 	// config event
 	EVSYS.ASYNCUSER0 = EVSYS_ASYNCUSER0_ASYNCCH0_gc;
-	EVSYS.ASYNCCH0 = EVSYS_ASYNCCH0_PORTA_PIN4_gc; // PA4 as event trigger
+	EVSYS.ASYNCCH0 = EVSYS_ASYNCCH0_PORTA_PIN6_gc; // PA6 as event trigger
 	// config pulse with capture
 	TCB0.CTRLB = TCB_CNTMODE_PW_gc; // set timer to pulse width measurement mode
 	TCB0.CTRLA = TCB_CLKSEL_CLKDIV2_gc; // prescale timer clock by 2
