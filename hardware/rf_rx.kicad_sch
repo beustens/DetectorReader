@@ -828,7 +828,7 @@
   )
 
   (no_connect (at 236.22 138.43) (uuid ed4183bb-781c-4145-b8f6-4f5cf606c8e9))
-  (no_connect (at 238.76 138.43) (uuid ed4183bb-781c-4145-b8f6-4f5cf606c8e9))
+  (no_connect (at 238.76 138.43) (uuid ed4183bb-781c-4145-b8f6-4f5cf606c8ea))
 
   (wire (pts (xy 55.88 62.23) (xy 63.5 62.23))
     (stroke (width 0) (type default) (color 0 0 0 0))
