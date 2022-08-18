@@ -24,15 +24,16 @@
 #define PULSE_TERM 0 // pulse sequence termination
 #define RS 10 // reader short pulse length in us
 #define RL (3*RS) // reader long pulse length in us
-#define FRAME_SYNC 12, RS, RS, (2*RS+RL), RS // reader frame sync pulse lenght in us
-#define TR_CAL 150, RS // reader TRcal pulse length in us
-#define RD0 RS, RS // reader data-0 pulse length
-#define RD1 RL, RS // reader data-1 pulse length
+#define RD0 RS, RS // reader data-0 pulses
+#define RD1 RL, RS // reader data-1 pulses
+#define RT_CAL ((RS+RS)+(RL+RS)-RS), RS // reader RTcal pulses in us. RTCal = RD0length+RD1length
+#define FRAME_SYNC 12, RD0, RT_CAL // reader frame sync pulses in us
+#define TR_CAL (160-RS), RS // reader TRCal pulses in us. TRCal = DR/BLF = 8/0.05MHz, according to queryPulses
 #define ACK_CMD RD0, RD1 // reader ACK command bit (01) pulses in us
-#define NUM_ACK_PREFIX 9 // pulses in ACK command before RN16 pulses
-#define NUM_ACK_FULL 41 // pulses in ACK command after RN16 pulses
+#define NUM_ACK_PREFIX 9 // number of pulses in ACK command before RN16 pulses
+#define NUM_ACK_FULL 41 // number of pulses in ACK command after RN16 pulses
 // tag
-#define NUM_PREAMBLE 6 // tag preamble pulses - 1 because first not detected
+#define NUM_PREAMBLE 6 // number of tag preamble pulses - 1 because first not detected
 #define TS 100 // tag FM0 short pulse (2x for 0-bit) length in us * 10 for 50kHz BLF
 #define TL (2*TS) // tag FM0 long pulse (1x for 1-bit) length in us * 10 for 50kHz BLF
 #define TAG_TOLERANCE 30 // tag pulse length tolerance in us * 10
@@ -121,7 +122,7 @@ int main() {
 		}
 		
 		// transmit query
-		if ((RTC.INTFLAGS & RTC_CMP_bm) && (iPreamblePulse == 0)) {
+		if (RTC.INTFLAGS & RTC_CMP_bm) {
 			// RTC interrupt bit set
 			RTC.INTFLAGS |= RTC_CMP_bm; // clear interrupt bit
 			RTC.CNT = 0; // restart RTC
@@ -136,7 +137,7 @@ int main() {
 			TCB0.CNT = 0; // reset counter
 			
 			if (iPreamblePulse < NUM_PREAMBLE) {
-				// track preamble
+				// track preamble for any tag reply
 				if (pulseMatch(tagPulse, preamblePulses[iPreamblePulse])) {
 					// pulse in sequence matched
 					iPreamblePulse++; // point to next element
@@ -204,6 +205,7 @@ void modifyACK(uint8_t pulseWidth) {
 		resetParsing();
 		tagResponse = EPC; // next state
 		_delay_us(RESP_DELAY);
+		RTC.CNT = 0; // restart RTC
 		runSequence(ackPulses); // acknowledge tag to make it reply with EPC
 	}
 }
@@ -230,6 +232,7 @@ void modifyEPC(uint8_t bitVal) {
 			// reset
 			resetParsing();
 			tagResponse = RN16;
+			_delay_us(RESP_DELAY);
 		}
 	} else {
 		iEPCBit--;
@@ -370,7 +373,7 @@ void configTCB() {
 void configRTC() {
 	// config realtime clock
 	RTC.CLKSEL = RTC_CLKSEL_INT32K_gc; // use internal 32.768kHz clock
-	RTC.CMP = 100; // compare to this value
+	RTC.CMP = 200; // compare to this value
 	RTC.INTCTRL = RTC_CMP_bm; // enable interrupt on compare
 	RTC.CTRLA = RTC_RTCEN_bm; // enable RTC
 }
