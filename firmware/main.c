@@ -36,7 +36,7 @@
 #define NUM_PREAMBLE 6 // number of tag preamble pulses - 1 because first not detected
 #define TS 100 // tag FM0 short pulse (2x for 0-bit) length in us * 10 for 50kHz BLF
 #define TL (2*TS) // tag FM0 long pulse (1x for 1-bit) length in us * 10 for 50kHz BLF
-#define TAG_TOLERANCE 30 // tag pulse length tolerance in us * 10
+#define TAG_TOLERANCE 40 // tag pulse length tolerance in us * 10
 #define RESP_DELAY 5*TL/10 // 3...20 * FM0 symbol period in us for reader to wait before react to tag response
 #define NUM_EPC_PREFIX 2 // PC word (and actually CRC, why not 4?)
 #define NUM_EPC_BYTES 12 // EPC bytes
