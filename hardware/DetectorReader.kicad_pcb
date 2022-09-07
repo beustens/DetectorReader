@@ -1063,7 +1063,7 @@
       (effects (font (size 0.8 0.8) (thickness 0.15)))
       (tstamp 7401f61b-dc36-4f5a-ba3e-b101a22bf1fc)
     )
-    (fp_text value "6.2k" (at 0 1.43) (layer "F.Fab")
+    (fp_text value "12k" (at 0 1.43) (layer "F.Fab")
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 11cae898-6e02-4314-87c3-bfa88f249303)
     )
@@ -1639,7 +1639,7 @@
     (property "Sheetfile" "DetectorReader.kicad_sch")
     (property "Sheetname" "")
     (path "/c1bf78f2-ab57-4699-9ec8-50b7785ede37")
-    (attr through_hole exclude_from_bom)
+    (attr through_hole)
     (fp_text reference "SW1" (at -2.5 1.54) (layer "F.SilkS") hide
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 9d1a746e-d72a-493d-b447-6711a2efc7c6)
@@ -2854,7 +2854,7 @@
     (property "Sheetfile" "DetectorReader.kicad_sch")
     (property "Sheetname" "")
     (path "/f9db084a-2ce3-4f60-b520-5a0f03abc4d1")
-    (attr through_hole exclude_from_bom)
+    (attr through_hole)
     (fp_text reference "J2" (at -0.2 12.94) (layer "F.SilkS") hide
       (effects (font (size 1 1) (thickness 0.15)))
       (tstamp d326ebbf-79b6-48d2-a6a7-ad8abb56bf3d)

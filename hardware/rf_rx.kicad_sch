@@ -1477,7 +1477,7 @@
     (in_bom yes) (on_board yes)
     (uuid d2a2544b-dab3-45d2-a598-34e0d48784a6)
     (property "Reference" "R10" (id 0) (at 222.25 76.2 90))
-    (property "Value" "6.2k" (id 1) (at 222.25 78.74 90))
+    (property "Value" "12k" (id 1) (at 222.25 78.74 90))
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (id 2) (at 222.25 80.772 90)
       (effects (font (size 1.27 1.27)) hide)
     )
