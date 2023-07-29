@@ -1,6 +1,5 @@
 TARGET = project
 MCU = attiny814
-DEVICE = tiny814
 # clock must be configured in main.c accordingly
 CLOCK = 20000000
 SOURCES = main.c
@@ -24,19 +23,21 @@ all: $(TARGET).hex
 # link the object files together
 $(TARGET).elf: $(OBJECTS)
 	$(COMPILE) $(OBJECTS) -o $(TARGET).elf
+	avr-size $(TARGET).elf
 
 # convert elf file to hex file
 $(TARGET).hex: $(TARGET).elf
 	avr-objcopy -j .text -j .data -j .rodata -O ihex $(TARGET).elf $(TARGET).hex
 
-# flash (call make flash), requires pyupdi installed
+# flash (call make flash), requires pymcuprog installed
 flash: $(TARGET).hex
 ifeq ($(OS),Windows_NT)
-	python -m updi.pyupdi -d $(DEVICE) -c $(PROGRAMMER) -f $(TARGET).hex
+	python -m pymcuprog.pymcuprog write -d $(MCU) -t uart -u $(PROGRAMMER) --erase -f $(TARGET).hex
 else
-	python3 -m updi.pyupdi -d $(DEVICE) -c $(PROGRAMMER) -f "$(shell pwd)/$(TARGET).hex"
+	python3 -m pymcuprog.pymcuprog write -d $(MCU) -t uart -u $(PROGRAMMER) --erase -f "$(shell pwd)/$(TARGET).hex"
 endif
 
+# remove build files
 clean:
 ifeq ($(OS),Windows_NT)
 	del -f $(TARGET).hex $(TARGET).elf $(OBJECTS)
