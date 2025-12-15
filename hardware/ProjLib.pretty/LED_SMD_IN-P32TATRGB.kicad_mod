@@ -1,0 +1,110 @@
+(footprint "LED_SMD_IN-P32TATRGB"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -2.2 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "8a6203f6-89d3-4a7c-984a-17ab0c9e9640")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "IN-P32TATRGB"
+		(at 0 1 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "a4993f4c-77d7-47d1-bb1c-b50f573c4b1b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://www.inolux-corp.com/datasheet/SMDLED/RGB%20Top%20View/IN-P32TATRGB_V1.0.pdf"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f95431bb-d676-4b52-8b7c-951b80e52dc8")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "bfb687fd-147e-4199-981e-2ca87cbfed8d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_poly
+		(pts
+			(xy -2.4 -1.4) (xy -2.68 -1.4) (xy -2.4 -1.68) (xy -2.4 -1.4)
+		)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.SilkS")
+		(uuid "fabb5947-4cb2-4fc4-a82d-ccad7120cf22")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 2.5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "ef25793a-9720-4935-8d65-3ce8f8912f22")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -1.4 -0.75)
+		(size 1.2 0.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "019f2126-ecd3-43ae-95ca-65c0dae4176a")
+	)
+	(pad "2" smd rect
+		(at 1.4 -0.75)
+		(size 1.2 0.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "bef72fdb-4dce-42e1-afb8-6abbb7fe71ee")
+	)
+	(pad "3" smd rect
+		(at -1.4 0.75)
+		(size 1.2 0.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "49ff099e-758e-4aaf-8247-be52a5aaa35d")
+	)
+	(pad "4" smd rect
+		(at 1.4 0.75)
+		(size 1.2 0.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(thermal_bridge_angle 45)
+		(uuid "da9ef152-8dcf-47fa-9d50-b9813399b825")
+	)
+	(embedded_fonts no)
+)
