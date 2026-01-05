@@ -49,9 +49,6 @@ void trackTagPulses() {
 			}
 		} else {
 			// wrong sequence
-			LED_PORT.OUTCLR = LED_RED_PIN; // set error indicator
-			_delay_ms(5);
-
 			resetTracking();
 		}
 	} else {
@@ -80,9 +77,6 @@ void trackTagPulses() {
 			}
 		} else {
 			// invalid pulse
-			LED_PORT.OUTCLR = LED_RED_PIN; // set error indicator
-			_delay_ms(5);
-
 			resetTracking();
 			tagResponse = RN16;
 		}
