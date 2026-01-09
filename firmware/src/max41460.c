@@ -41,9 +41,9 @@ void startTransmitter() {
 	const uint8_t drivers = 8; // number of parallel drivers in the PA (1...8)
 	const uint8_t caps = 0; // number of parallel 175 fF capacitors on PA output (0...31)
 
-	const float centerFreq = 866.3;
-	const float crystalFreq = 16.0;
-	const uint32_t freq = (uint32_t)(((1 << 16) * centerFreq) / crystalFreq);
+	const uint32_t centerFreqScaled = 8663; // 866.3 * 10
+	const uint32_t crystalFreqScaled = 160; // 16.0 * 10
+	const uint32_t pll = ((1UL << 16) * centerFreqScaled) / crystalFreqScaled;
 
 	READER_PORT.OUTCLR = SPI_CS;
 	_delay_us(250+100); // wait for crystal oscillator and PLL to turn on
@@ -60,9 +60,9 @@ void startTransmitter() {
 		0x60, // PLL1 (0x08), reset value
 		0x00, // PLL2 (0x09), reset value
 		0x00, // CFG6 (0x0A), reset value (+ 0x01 to enable 4-wire SPI mode to read back values with MISO)
-		(uint8_t)(freq >> 16), // PLL3 (0x0B), frequency [23:16]
-		(uint8_t)(freq >> 8), // PLL4 (0x0C), frequency [15:8]
-		(uint8_t)(freq), // PLL5 (0x0D), frequency [7:0]
+		(uint8_t)(pll >> 16), // PLL3 (0x0B), frequency [23:16]
+		(uint8_t)(pll >> 8), // PLL4 (0x0C), frequency [15:8]
+		(uint8_t)(pll), // PLL5 (0x0D), frequency [7:0]
 		0x28, // PLL6 (0x0E), reset value
 		0x04, // PLL7 (0x0F), reset value
 		0x02 // CFG7 (0x10), reset value + (enable TX << 1)
