@@ -1,7 +1,6 @@
 Comment,Designator,Footprint,LCSC,Quantity
 MAX41460,U4,VSSOP-10_3x3mm_P0.5mm,,1
 2.7p,C10,C_0603_1608Metric,,1
-100n,C2,C_0603_1608Metric,,1
 10p,C12,C_0603_1608Metric,,1
 "BC847C,215",Q2,SOT-23,,1
 CY7C65211-24LTXI,U3,QFN-24-1EP_4x4mm_P0.5mm_EP2.6x2.6mm,,1

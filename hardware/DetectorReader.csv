@@ -1,5 +1,5 @@
 "Reference","Qty","Value","Footprint"
-"C1,C2","2","100n","Capacitor_SMD:C_0603_1608Metric"
+"C1","1","100n","Capacitor_SMD:C_0603_1608Metric"
 "C3,C4","2","10u","Capacitor_SMD:C_0603_1608Metric"
 "C5","1","1u","Capacitor_SMD:C_0603_1608Metric"
 "C6,C17","2","10n","Capacitor_SMD:C_0603_1608Metric"
