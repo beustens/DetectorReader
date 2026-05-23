@@ -18,6 +18,7 @@
 "R5,R11","2","10k","Resistor_SMD:R_0603_1608Metric"
 "R6","1","1M","Resistor_SMD:R_0603_1608Metric"
 "R10,R12","2","220k","Resistor_SMD:R_0603_1608Metric"
+"R13","1","50R","Resistor_SMD:R_0603_1608Metric"
 "U1","1","ATtiny814-SS","Package_SO:SOIC-14_3.9x8.7mm_P1.27mm"
 "U2","1","TLV70330DBVR","Package_TO_SOT_SMD:SOT-23-5"
 "U3","1","CY7C65211-24LTXI","Package_DFN_QFN:QFN-24-1EP_4x4mm_P0.5mm_EP2.6x2.6mm"
