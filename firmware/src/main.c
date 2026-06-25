@@ -41,6 +41,8 @@ int main() {
 	enablePower(TRUE);
 	LED_PORT.OUTSET = LED_RED_PIN; // disable LED
 
+	uint8_t slot = 0;
+
 	// main program loop
 	while (TRUE) {
 		// parse incoming UART command
@@ -54,7 +56,14 @@ int main() {
 			// RTC interrupt bit set
 			RTC.INTFLAGS |= RTC_CMP_bm; // clear interrupt bit
 			RTC.CNT = 0; // restart RTC
-			runSequence(queryPulses);
+			if (slot == 0) {
+				runSequence(queryPulses);
+			} else if (slot > POPULATION) {
+				slot = 0;
+			} else {
+				slot++;
+				runSequence(queryRepPulses);
+			}
 		}
 
 		// receive tag responses

@@ -6,9 +6,10 @@
 // variables
 enum tagReplies tagResponse = RN16;
 uint8_t powerEnable = FALSE;
-const uint8_t queryPulses[] = {FRAME_SYNC, TR_CAL, RD1, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD1, RD0, RD1, RD0, RD0, RD0, RD0, RD0, RD1, RD1, RD1, RD0, RD1, PULSE_TERM}; // QUERY command with FM0, DR=8, no preamble, 20us Tari, 50kHz BLF
-uint8_t ackPulses[] = {FRAME_SYNC, ACK_CMD, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, PULSE_TERM}; // ACK command with RN 0b0000000000000000
-const uint16_t preamblePulses[NUM_PREAMBLE] = {TS, TS, TL, TS, TS+TL, TL}; // FM0 preamble without first pulse. 50kHz BLF * 10
+const uint8_t queryPulses[] = {FRAME_SYNC, TR_CAL, RD1, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD1, RD0, RD1, RD0, RD0, RD1, RD0, RD0, RD1, RD0, RD0, RD0, RD0, PULSE_TERM}; // Query(cmd=1000, dr=8, m=1, trExt=False, sel='all1', session=1, target='a', q=4)
+const uint8_t queryRepPulses[] = {FRAME_SYNC, RD0, RD0, RD0, RD1, PULSE_TERM}; // QueryRep(cmd=00, session=1)
+uint8_t ackPulses[] = {FRAME_SYNC, RD0, RD1, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, RD0, PULSE_TERM}; // ACK(cmd=01, rn=0b0000000000000000)
+const uint16_t preamblePulses[NUM_PREAMBLE] = {TS, TS, TL, TS, TS+TL, TL}; // FM0 preamble without first pulse
 uint8_t iPreamblePulse = 0;
 uint8_t iACKPulse = 0;
 uint8_t iTagData = 0;
@@ -58,11 +59,7 @@ void trackTagPulses() {
 			if (halfTagData0) {
 				// second part of data-0
 				halfTagData0 = FALSE;
-				if (tagResponse == RN16) {
-					trackACK(RS);
-				} else if (tagResponse == EPC) {
-					trackEPC(0);
-				}
+				trackTagPayload(0);
 			} else {
 				// first part of data-0
 				halfTagData0 = TRUE;
@@ -70,11 +67,7 @@ void trackTagPulses() {
 		} else if (pulseMatch(tagPulse, TL)) {
 			// tag data-1
 			halfTagData0 = FALSE;
-			if (tagResponse == RN16) {
-				trackACK(RL);
-			} else if (tagResponse == EPC) {
-				trackEPC(1);
-			}
+			trackTagPayload(1);
 		} else {
 			// invalid pulse
 			resetTracking();
@@ -83,8 +76,16 @@ void trackTagPulses() {
 	}
 }
 
-void trackACK(uint8_t pulseWidth) {
-	ackPulses[iACKPulse] = pulseWidth;
+void trackTagPayload(uint8_t bitVal) {
+	if (tagResponse == RN16) {
+		trackACK(bitVal);
+	} else if (tagResponse == EPC) {
+		trackEPC(bitVal);
+	}
+}
+
+void trackACK(uint8_t bitVal) {
+	ackPulses[iACKPulse] = (bitVal) ? RL : RS;
 	iACKPulse += 2;
 	if (iACKPulse >= NUM_ACK_FULL) {
 		// reached end
